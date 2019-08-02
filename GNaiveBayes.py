@@ -1,6 +1,7 @@
 import numpy as np
 import math as mt
 import time
+import pandas as pd
 
 class GNaiveBayes:
     def __init__(self, data):
@@ -42,7 +43,7 @@ class GNaiveBayes:
         print(self.__stdClass)
 
 
-    def uji(self, data, interface, ImportedFile):
+    def uji(self, data):
         ujistart = time.clock()
         i = 0
         datauji = data.copy()
@@ -89,22 +90,36 @@ class GNaiveBayes:
             i += 1
         waktu = time.clock() - ujistart
         waktu = round(waktu, 2)
-        interface.LabelWaktuUji.configure(text="Waktu Uji: " + str(waktu) + " detik")
-        interface.LabelWaktuUji.lift(interface.Frame2)
-        print(datapredik)
-        ImportedFile.createTableCF(datauji, datapredik, self.__uniqueClass, interface)
-
-
-
+        tabelcf = pd.DataFrame(0, self.__uniqueClass, self.__uniqueClass)
+        print(tabelcf)
+        i = 0
+        while i < len(datapredik):
+            tabelcf.at[datapredik.iat[i, -1], datapredik.iat[i, -2]] = tabelcf.at[
+                                                                           datapredik.iat[i, -1], datapredik.iat[
+                                                                               i, -2]] + 1
+            i += 1
+        # Total sum per row:
+        tabelcf.loc['Total', :] = tabelcf.sum(axis=0)
+        # Total sum per column:
+        tabelcf.loc[:, 'Total'] = tabelcf.sum(axis=1)
+        i = 0
+        TPTN = 0
+        while i < (len(tabelcf) - 1):
+            TPTN = TPTN + tabelcf.iat[i, i]
+            i += 1
+        accuracy = TPTN / len(datauji)
+        tesa = accuracy*100
+        tesa = "{0:.2f}".format(tesa)
+        print("Accuracy= {}".format(accuracy))
+        print(tabelcf)
 
 
 '''
-NB = GNaiveBayes('C:/Users/halim/Documents/KULIAH/SEMESTER 7/Dataset Numerik/avila/avila/avila-tr.csv')
-NB.Latih()
-filename = 'finalized_model.sav'
-pickle.dump(NB, open(filename, 'wb'))
-loaded_model = pickle.load(open(filename, 'rb'))
-loaded_model.Uji('C:/Users/halim/Documents/KULIAH/SEMESTER 7/Dataset Numerik/avila/avila/avila-ts.csv')
+trainfile = pd.read_csv('fileaddress/file')
+GNB = GNaiveBayes(trainfile)
+GNB.latih()
+testfile = pd.read_csv('fileaddress/file2')
+GNB.uji(testfile)
 '''
 
 
