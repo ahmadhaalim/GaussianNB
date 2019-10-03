@@ -6,3 +6,4 @@ Requires an input of a dataframe from Pandas library.
 Checked and tested to be working for Avila Dataset.
 
 Use only for dataset with numeric or continous value
+Interface.py is not needed to run the script
